@@ -1,6 +1,6 @@
 var sketchProc = function(processingInstance) {
     with (processingInstance) {
-        size(600, 600); 
+        size(609, 600); 
         frameRate(60);
         /**
          * Up Arrow or W to move forward
@@ -366,7 +366,7 @@ var sketchProc = function(processingInstance) {
             
             this.collides = function(asteroid) {
                 var d = dist(this.pos.x, this.pos.y, asteroid.pos.x, asteroid.pos.y);
-                if(d > (asteroid.s + this.r)) {
+                if(d > (3/2*asteroid.s + this.r)) {
                     return false;
                 }
                 if(d <= asteroid.s/2) {
@@ -584,7 +584,7 @@ var sketchProc = function(processingInstance) {
 
             this.changeSize = function(amount) {
                 var s = this.s;
-                s = constrain(s, 50, Infinity);
+                s = constrain(s, 100, Infinity);
                 if(amount > s) {
                     amount = s;
                 }
@@ -686,6 +686,7 @@ var sketchProc = function(processingInstance) {
             this.time = this.fireCooldown;
             
             this.points = 0;
+            this.livesLost = 0;
             this.pointsLife = 0;
             this.pointsForLife = 5000;
             
@@ -954,7 +955,7 @@ var sketchProc = function(processingInstance) {
                                 this.bullets.splice(k, 1);
                                 this.shotsHit ++;
                                 if(current.boss && current.s <= 0) {
-                                    this.lives ++;
+                                    this.livesLost --;
                                     this.addPoints(current);
                                     current.dead = true;
                                 } else if(!current.boss) {
@@ -985,7 +986,7 @@ var sketchProc = function(processingInstance) {
                                         this.asteroids[j].changeSize(bossAccumulation);
                                         bossAccumulation = 0;
                                         if(this.asteroids[j].s <= 0) {
-                                            this.lives ++;
+                                            this.livesLost --;
                                             this.addPoints(this.asteroids[j]);
                                             this.asteroids[j].dead = true;
                                         } 
@@ -1185,14 +1186,7 @@ var sketchProc = function(processingInstance) {
                     points = 3*round(asteroid.initialS);
                 }
 
-
                 this.points += points;
-                this.pointsLife += points;
-                if(this.pointsLife >= this.pointsForLife-points) {
-                    this.lives ++;
-                    if(sound) {playSound(getSound("retro/coin"));}
-                    this.pointsLife = 0;
-                }
                 
                 if(sound) {
                     if(!isNaN(asteroid.pointValue)) {
@@ -1244,7 +1238,7 @@ var sketchProc = function(processingInstance) {
                                 this.bullets.splice(j, 1);
                                 this.shotsHit ++;
                                 if(current.boss && current.s <= 0) {
-                                    this.lives ++;
+                                    this.livesLost --;
                                     this.addPoints(current);
                                     current.dead = true;
                                 } else if(!current.boss) {
@@ -1270,6 +1264,8 @@ var sketchProc = function(processingInstance) {
             this.update = function() {
                 this.vel.add(this.acc);
                 this.pos.add(this.vel);
+
+                this.lives = floor(this.points/this.pointsForLife) - this.livesLost + 3;
                 
                 if(this.power !== "spam" && this.power !== "lazer") {
                     this.fireCooldown = 20;
@@ -1477,13 +1473,13 @@ var sketchProc = function(processingInstance) {
                             if(!asteroid.boss) {
                                 asteroid.dead = true;
                             }
-                            if(this.power !== "invincible") {
+                            if(this.power !== "invincible" && this.power !== "time") {
                                 this.alive = false;
                                 if(sound) {
                                     playSound(getSound("retro/rumble"));
                                 }
                                 this.initDirections();
-                            } else {
+                            } else if(this.power === "invincible") {
                                 this.addPoints(asteroid);
                             }
                             return;
@@ -1545,7 +1541,8 @@ var sketchProc = function(processingInstance) {
                     this.dummyAngle = 0;
                     this.angle = 0;
                     this.animationTime = 0;
-                    this.lives--;
+                    this.livesLost++;
+                    // this.lives--;
                 }
             };
             
@@ -1647,7 +1644,6 @@ var sketchProc = function(processingInstance) {
         var time2 = 0;
 
         var speed3 = 60*round(random(10, 15));
-        speed3 = 1;
         var time3 = 0;
 
         var speed4 = 60*60;
@@ -1793,4 +1789,4 @@ var sketchProc = function(processingInstance) {
    
     var canvas = document.getElementById("canvas"); 
 
-    var processingInstance = new Processing(canvas, sketchProc);
+    var processingInstance = new Processing(canvas, sketchProc);q
