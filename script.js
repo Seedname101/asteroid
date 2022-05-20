@@ -1,6 +1,6 @@
 var sketchProc = function(processingInstance) {
     with (processingInstance) {
-        size(609, 600); 
+        size(600, 600); 
         frameRate(60);
         /**
          * Up Arrow or W to move forward
