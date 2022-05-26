@@ -1789,4 +1789,4 @@ var sketchProc = function(processingInstance) {
    
     var canvas = document.getElementById("canvas"); 
 
-    var processingInstance = new Processing(canvas, sketchProc);q
+    var processingInstance = new Processing(canvas, sketchProc);
